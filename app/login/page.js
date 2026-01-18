@@ -41,7 +41,6 @@ const App = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.username) newErrors.username = "Required";
     if (!formData.email) newErrors.email = "Required";
     if (!formData.password) newErrors.password = "Required";
     setErrors(newErrors);
@@ -51,32 +50,33 @@ const App = () => {
   const handleSubmit = async (e) => {
     setErrorMsg("");
     e.preventDefault();
+
     if (!validate()) return;
-    const res = await fetch("/api/signup", {
+    const res = await fetch("/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        username: formData.username,
         email: formData.email,
         password: formData.password,
       }),
     });
 
     const result = await res.json();
-    console.log(result);
+    console.log("i am result", result);
 
     if (result.success) {
       // In a real Next.js app, this would be router.push("/login")
-      router.push("/login");
+      router.push("/dashboard");
+      console.log("login done");
     } else {
       setErrorMsg("Email already exists");
     }
     setIsSubmitting(true);
-    // setTimeout(() => {
-    //   setIsSubmitting(false);
-    //   toast.success("Account created successfully");
-    //   router.push("/dashboard");
-    // }, 1200);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      toast.success("Account created successfully");
+      router.push("/dashboard");
+    }, 1200);
   };
 
   return (
@@ -167,7 +167,7 @@ const App = () => {
           )}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-5">
-              <div className="relative group">
+              {/* <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <User className="h-4 w-4 text-zinc-600 group-focus-within:text-emerald-500 transition-colors" />
                 </div>
@@ -183,7 +183,7 @@ const App = () => {
                     MISSING
                   </span>
                 )}
-              </div>
+              </div> */}
 
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -230,7 +230,8 @@ const App = () => {
               className="w-full relative py-5 bg-white text-black font-black text-xs tracking-[0.3em] uppercase rounded-xl hover:bg-emerald-400 transition-all active:scale-[0.98] overflow-hidden group shadow-[0_20px_40px_-15px_rgba(255,255,255,0.1)]"
             >
               <div className="relative z-10 flex items-center justify-center gap-3">
-                {isSubmitting ? "PROCESSING..." : "INITIALIZE ACCOUNT"}
+                {isSubmitting ? "AUTHENTICATING..." : "LOG IN"}
+
                 {!isSubmitting && (
                   <Zap size={14} className="group-hover:animate-bounce" />
                 )}
@@ -242,14 +243,14 @@ const App = () => {
           {/* New Login Redirection Link */}
           <div className="mt-8 flex flex-col items-center">
             <button
-              onClick={() => router.push("/login")}
+              onClick={() => router.push("/")}
               className="group flex items-center gap-2 text-zinc-500 hover:text-white transition-colors duration-300"
             >
               <span className="text-[10px] font-bold tracking-[0.2em] uppercase">
-                Already have an account?
+                Make a account?
               </span>
               <span className="text-xs font-black text-emerald-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                LOGIN <ArrowRight size={12} />
+                SignUp <ArrowRight size={12} />
               </span>
             </button>
           </div>
